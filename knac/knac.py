@@ -101,11 +101,8 @@ class KNAC:
             entropy = scipy.stats.entropy(X[c])  # get entropy from counts
             self.H.append(entropy)
             
-        # H_conf2 is based on: https://gitlab.geist.re/pml/x_knowledge-augmented-clustering/-/issues/9
-        #self.H_conf2 = normalize(X, axis=1)
-        #self.H_conf2 = minmax_scale(self.H_conf2, axis=1)
-        self.H_conf2 = minmax_scale(X, axis=1)
-        self.H_conf2 = self.H_conf2 * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
+        self.H_conf2 = X * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
+        self.H_conf2 = minmax_scale(self.H_conf2, axis=1)
         self.H_conf2 = pd.DataFrame(self.H_conf2, index=X.index, columns=X.columns)
 
         z = X.sum(axis=1)
