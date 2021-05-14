@@ -4,7 +4,7 @@ It allows to refine expert-based labeling with splits and merges recommendations
 The explanations were formulated as rules and therefore can be easily interpreted incorporated with expert knowledge.
 
 The overall workflow for KnAC is presented in Figure below:
-
+![Workflow for KnAC](./pix/workflow.png?raw=true "Title")
 
 ## Set up environment to run examples
 Some of the packages used in KnAC anre not available in conda, hence the following code should set up all of the requirements in virtual environment:
