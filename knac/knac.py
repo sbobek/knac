@@ -103,7 +103,7 @@ class KNAC:
         
         self.H_conf2 = normalize(X, axis=0)
         self.H_conf2 = self.H_conf2 * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
-        self.H_conf2 = minmax_scale(self.H_conf2, axis=1)
+        #self.H_conf2 = minmax_scale(self.H_conf2, axis=1)
         self.H_conf2 = pd.DataFrame(self.H_conf2, index=X.index, columns=X.columns)
 
         z = X.sum(axis=1)
