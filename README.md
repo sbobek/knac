@@ -1,3 +1,5 @@
+# Google Colab Tutorial
+Please follow the tutorial on using KnAC in text-clustering and fil in the survey at the end: [Colab Notebook](https://colab.research.google.com/drive/1SJaG_wW0h1_JaPk40vPNP3dpTJGa1xXG)
 # Knowledge Augmented Clustering (KnAC)
 KnAC is a toolk for expert knowledge extension with a usage of automatic clustering algorithms.
 It allows to refine expert-based labeling with splits and merges recommendations of expert labeling augmented with explanations.
