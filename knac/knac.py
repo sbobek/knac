@@ -110,7 +110,7 @@ class KNAC:
         self.H_conf = X / z.values.reshape(-1, 1)
         self.H_conf = self.H_conf * (1 / (np.array(self.H) + 1))
         self.H_conf = self.H_conf.div(self.H_conf.sum(axis=1), axis=0)
-        self.H_conf_n = pd.DataFrame(normalize(X, axis=1), index=X.index, columns=X.columns)
+        self.H_conf_n = pd.DataFrame(normalize(self.H_conf, axis=1), index=X.index, columns=X.columns)
 
         return self
 
