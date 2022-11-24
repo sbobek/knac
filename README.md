@@ -64,7 +64,7 @@ Which should be read as: automatically discovered clusters C1 and C2 should be m
 
 For this recommendation, following justifications describing differences between expert clusters to merge, showing that the most important difference between the clusters to merge is in the **x2** variable and its value around -5. It is the xpert role to decide if this difference is significant taking into account the domain knowledge (in this case one can assume that the difference describe by the rule sis not relevant for distinguising two separate clusters based on such condition).
 
-```
+``` python
 justify_merges_tree(merge_recoms=merge_recoms, data=data, features=features, target_expert='Expert_Clusters')
 
 ['if (x2 <= -5.065) then class: 0 (proba: 98.21%) | based on 56 samples',
