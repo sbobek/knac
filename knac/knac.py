@@ -105,7 +105,7 @@ class KnacSplits(BaseEstimator, TransformerMixin):
         
         self.H_split = normalize(X, axis=0)
         self.H_split = self.H_split * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
-        self.H_split = pd.DataFrame(self.split, index=X.index, columns=X.columns)
+        self.H_split = pd.DataFrame(self.H_split, index=X.index, columns=X.columns)
 
         return self
 
@@ -189,10 +189,10 @@ class KnacMerges(BaseEstimator, TransformerMixin):
             self.H.append(entropy)
 
         z = X.sum(axis=1)
-        self.H_merge_cd = X / z.values.reshape(-1, 1)
-        self.H_merge_cd = self.H_merge_cd * (1 / (np.array(self.H) + 1))
-        self.H_merge_cd = self.H_merge_cd.div(self.H_merge_cd.sum(axis=1), axis=0)
-        self.H_merge = pd.DataFrame(normalize(self.H_merge_cd, axis=1), index=X.index, columns=X.columns)
+        self.H_merge = X / z.values.reshape(-1, 1)
+        self.H_merge = self.H_merge * (1 / (np.array(self.H) + 1))
+        self.H_merge = self.H_merge.div(self.H_merge.sum(axis=1), axis=0)
+        self.H_merge = pd.DataFrame(normalize(self.H_merge, axis=1), index=X.index, columns=X.columns)
 
         return self
 
