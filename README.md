@@ -82,3 +82,24 @@ conda install pip
 pip install -r requirements.txt
 ```
 After that run `jupyter lab` and anvigate to `examples`   direcotry to run notebooks.
+
+# Cite this wotk
+
+```
+@Article{bobek2022knac,
+  author="Bobek, Szymon
+  and Kuk, Micha{\l}
+  and Brzegowski, Jakub
+  and Brzychczy, Edyta
+  and Nalepa, Grzegorz J.",
+  title="KnAC: an approach for enhancing cluster analysis with background knowledge and explanations",
+  journal="Applied Intelligence",
+  year="2022",
+  month="Nov",
+  day="23",
+  issn="1573-7497",
+  doi="10.1007/s10489-022-04310-9",
+  url="https://doi.org/10.1007/s10489-022-04310-9"
+}
+```
+
