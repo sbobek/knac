@@ -103,10 +103,9 @@ class KnacSplits(BaseEstimator, TransformerMixin):
             entropy = scipy.stats.entropy(X[c])  # get entropy from counts
             self.H.append(entropy)
         
-        self.H_conf2 = normalize(X, axis=0)
-        self.H_conf2 = self.H_conf2 * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
-        #self.H_conf2 = minmax_scale(self.H_conf2, axis=1)
-        self.H_conf2 = pd.DataFrame(self.H_conf2, index=X.index, columns=X.columns)
+        self.H_split = normalize(X, axis=0)
+        self.H_split = self.H_split * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
+        self.H_split = pd.DataFrame(self.split, index=X.index, columns=X.columns)
 
         return self
 
@@ -118,7 +117,7 @@ class KnacSplits(BaseEstimator, TransformerMixin):
             silhouette_metric_weight = self.silhouette_weight
             threshold = threshold * (1 - silhouette_metric_weight)
 
-        to_split = self.H_conf2.apply(
+        to_split = self.H_split.apply(
             lambda x: [tuple((x[x > threshold]).index), np.mean(x[x > threshold])],
             axis=1)
         length = to_split.apply(lambda x: len(x[0]))
@@ -190,15 +189,15 @@ class KnacMerges(BaseEstimator, TransformerMixin):
             self.H.append(entropy)
 
         z = X.sum(axis=1)
-        self.H_conf = X / z.values.reshape(-1, 1)
-        self.H_conf = self.H_conf * (1 / (np.array(self.H) + 1))
-        self.H_conf = self.H_conf.div(self.H_conf.sum(axis=1), axis=0)
-        self.H_conf_n = pd.DataFrame(normalize(self.H_conf, axis=1), index=X.index, columns=X.columns)
+        self.H_merge_cd = X / z.values.reshape(-1, 1)
+        self.H_merge_cd = self.H_merge_cd * (1 / (np.array(self.H) + 1))
+        self.H_merge_cd = self.H_merge_cd.div(self.H_merge_cd.sum(axis=1), axis=0)
+        self.H_merge = pd.DataFrame(normalize(self.H_merge_cd, axis=1), index=X.index, columns=X.columns)
 
         return self
 
     def transform(self, X):
-        similarity_matrix = np.dot(self.H_conf_n.values, self.H_conf_n.values.T)
+        similarity_matrix = np.dot(self.H_merge.values, self.H_merge.values.T)
         
         if (self.metric is not None):
             metric = self.metric
@@ -213,7 +212,7 @@ class KnacMerges(BaseEstimator, TransformerMixin):
             
             similarity_matrix = (1 - weight) * similarity_matrix + weight * (1 - distance_matrix)
         
-        similarity = pd.DataFrame(similarity_matrix, index=self.H_conf_n.index, columns=self.H_conf_n.index)
+        similarity = pd.DataFrame(similarity_matrix, index=self.H_merge.index, columns=self.H_merge.index)
         dists_fin = similarity[similarity > (self.confidence_threshold)].unstack().dropna().to_frame(name='similarity')
         dists_fin.index.set_names(["C1", "C2"], inplace=True)
         dists_fin = dists_fin.reset_index()
