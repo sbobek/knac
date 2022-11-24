@@ -8,10 +8,9 @@ from sklearn.preprocessing import minmax_scale
 
 
 from sklearn.metrics import silhouette_score, silhouette_samples
-from knac_helpers import split
+from knac_helpers import split, prepareDf2
 
-def split_into_clusters(X, Y):
-    unique_labels = np.unique(Y)
+def split_into_clusters(X, Y, unique_labels):
     clusters_n = len(unique_labels)
     clusters = [0] * clusters_n
     
@@ -74,55 +73,51 @@ def wards_link(c1, c2):
     dists = np.apply_along_axis(centroid_std, 1, combined_clusters)
     return dists.sum()
 
-class KNAC:
-    def __init__(
-            self, 
-            split_confidence_threshold=0.3, 
-            merge_confidence_threshold=0.8):
-        self.split_confidence_threshold = split_confidence_threshold
-        self.merge_confidence_threshold = merge_confidence_threshold
-        self.H = None
-        self.H_conf = None
-        self.H_conf_n = None
-        
-        self.clusters_linkage_metric_fns = {
-            'single_link': single_link,
-            'average_link': average_link,
-            'complete_link': complete_link,
-            'centroids_link': centroids_link,
-            'wards_link': wards_link
-        }
 
-        
-        
-    def fit(self,X):
+# ////////////////////////////////////////////////
+
+from sklearn.base import BaseEstimator, TransformerMixin
+
+class KnacSplits(BaseEstimator, TransformerMixin):  
+    # silhouette_metric={
+    #                                'weight': 0.5, 
+    #                                'data': X, 
+    #                                'labels_automatic': Y, 
+    #                                'labels_expert': E
+    #                            }
+    def __init__(self, 
+                confidence_threshold=0.4, 
+                silhouette_weight=None):
+        # TODO: add some assert ()
+        self.confidence_threshold = confidence_threshold
+        self.silhouette_weight = silhouette_weight
+
+
+    def fit(self, X, y=None, data=None, labels_automatic=None, labels_expert=None):
+        self.data = data
+        self.labels_automatic = labels_automatic
+        self.labels_expert = labels_expert
+
         self.H = []
         for c in X.columns:
             entropy = scipy.stats.entropy(X[c])  # get entropy from counts
             self.H.append(entropy)
         
-        self.H_conf2 = normalize(X, axis=0)
-        self.H_conf2 = self.H_conf2 * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
-        #self.H_conf2 = minmax_scale(self.H_conf2, axis=1)
-        self.H_conf2 = pd.DataFrame(self.H_conf2, index=X.index, columns=X.columns)
-
-        z = X.sum(axis=1)
-        self.H_conf = X / z.values.reshape(-1, 1)
-        self.H_conf = self.H_conf * (1 / (np.array(self.H) + 1))
-        self.H_conf = self.H_conf.div(self.H_conf.sum(axis=1), axis=0)
-        self.H_conf_n = pd.DataFrame(normalize(self.H_conf, axis=1), index=X.index, columns=X.columns)
+        self.H_split = normalize(X, axis=0)
+        self.H_split = self.H_split * 1.0 / (np.array(self.H)/np.log2(len(X))+1) 
+        self.H_split = pd.DataFrame(self.H_split, index=X.index, columns=X.columns)
 
         return self
 
-#     silhouette_metric={'weight': 0.5, 'data': X, 'labels_automatic': Y, 'labels_expert': E })
-    def splits(self, threshold_override=None, silhouette_metric=None):
-        threshold = self.split_confidence_threshold if threshold_override is None else threshold_override
+    def transform(self, X):
+        threshold = self.confidence_threshold
+        use_silhouette = self.silhouette_weight is not None and self.silhouette_weight != 0
         
-        if (silhouette_metric is not None):
-            silhouette_metric_weight = silhouette_metric['weight']
+        if (use_silhouette):
+            silhouette_metric_weight = self.silhouette_weight
             threshold = threshold * (1 - silhouette_metric_weight)
 
-        to_split = self.H_conf2.apply(
+        to_split = self.H_split.apply(
             lambda x: [tuple((x[x > threshold]).index), np.mean(x[x > threshold])],
             axis=1)
         length = to_split.apply(lambda x: len(x[0]))
@@ -130,17 +125,17 @@ class KNAC:
         split_recepie['len'] = length
         splits_base = split_recepie[split_recepie['len']>1]['split']
         
-        if (silhouette_metric is None):
+        if (not use_silhouette):
             return splits_base
         
-        data = silhouette_metric['data']
-        labels_automatic = silhouette_metric['labels_automatic']
-        labels_expert = silhouette_metric['labels_expert']
+        data = self.data
+        labels_automatic = self.labels_automatic
+        labels_expert = self.labels_expert
         
         for row_idx, s in splits_base.items():
             silhouette_score_before = silhouette_score(data, labels_expert)
             
-            cs = list(map(lambda s: int(s), s[0]))
+            cs = list(s[0])
             labels_expert_after_split = labels_expert
             for idx in range(1, len(cs)):
                 labels_expert_after_split = split(labels_expert_after_split, labels_automatic, row=row_idx, col1=cs[0], col2=(cs[idx]))
@@ -149,30 +144,78 @@ class KNAC:
             silhouette_diff = (silhouette_score_after - silhouette_score_before + 2) / 4
             base_confidence = s[1]
             s[1] = (1 - silhouette_metric_weight) * base_confidence + silhouette_metric_weight * silhouette_diff
+
+        # splits_base = splits_base.where(splits_base[1] > self.confidence_threshold)
+        # print(splits_base)
+        # print(type(splits_base)) 
         
         return splits_base
 
-#     clusters_linkage_metric={'metric': metric, 'data': X, 'labels_expert': E, 'weight': 0.2}
-    def merges(self, clusters_linkage_metric=None):
-        similarity_matrix = np.dot(self.H_conf_n.values, self.H_conf_n.values.T)
+
+# /////////////////////////////////////////////////
+
+
+class KnacMerges(BaseEstimator, TransformerMixin):  
+    # clusters_linkage_metric = {
+    #         'weight': 0.2,
+    #         'metric': metric, 
+    #         'data': X, 
+    #         'labels_expert': E            
+    #     }
+    def __init__(self, 
+                confidence_threshold=0.8, 
+                metric=None,
+                metric_weight=0.2):
+        # TODO: add some assert ()
+        self.confidence_threshold = confidence_threshold
+        self.metric = metric
+        self.metric_weight = metric_weight
         
-        if (clusters_linkage_metric is not None):
-            metric = clusters_linkage_metric['metric']
-            data = clusters_linkage_metric['data']
-            labels_expert = clusters_linkage_metric['labels_expert']
-            weight = clusters_linkage_metric['weight']
-            metric_fn = self.clusters_linkage_metric_fns[metric]
+        self._clusters_linkage_metric_fns = {
+            'single_link': single_link,
+            'average_link': average_link,
+            'complete_link': complete_link,
+            'centroids_link': centroids_link,
+            'wards_link': wards_link
+        }
+
+    def fit(self, X, y=None, data=None, labels_expert=None):
+        self.data = data
+        self.labels_expert = labels_expert
+
+        self.H = []
+        for c in X.columns:
+            entropy = scipy.stats.entropy(X[c])  # get entropy from counts
+            self.H.append(entropy)
+
+        z = X.sum(axis=1)
+        self.H_merge = X / z.values.reshape(-1, 1)
+        self.H_merge = self.H_merge * (1 / (np.array(self.H) + 1))
+        self.H_merge = self.H_merge.div(self.H_merge.sum(axis=1), axis=0)
+        self.H_merge = pd.DataFrame(normalize(self.H_merge, axis=1), index=X.index, columns=X.columns)
+
+        return self
+
+    def transform(self, X):
+        similarity_matrix = np.dot(self.H_merge.values, self.H_merge.values.T)
+        
+        if (self.metric is not None):
+            metric = self.metric
+            data = self.data
+            labels_expert = self.labels_expert
+            weight = self.metric_weight
+            metric_fn = self._clusters_linkage_metric_fns[metric]
             
-            clusters = split_into_clusters(data, labels_expert)
+            clusters = split_into_clusters(data, labels_expert, X.index)
             distance_matrix = clusters_distance_matrix(clusters, metric_fn)
             distance_matrix = (distance_matrix - distance_matrix.min()) / distance_matrix.max()
             
             similarity_matrix = (1 - weight) * similarity_matrix + weight * (1 - distance_matrix)
         
-        similarity = pd.DataFrame(similarity_matrix, index=self.H_conf_n.index, columns=self.H_conf_n.index)
-        dists_fin = similarity[similarity > (self.merge_confidence_threshold)].unstack().dropna().to_frame(name='similarity')
+        similarity = pd.DataFrame(similarity_matrix, index=self.H_merge.index, columns=self.H_merge.index)
+        dists_fin = similarity[similarity > (self.confidence_threshold)].unstack().dropna().to_frame(name='similarity')
         dists_fin.index.set_names(["C1", "C2"], inplace=True)
         dists_fin = dists_fin.reset_index()
         dists_fin_nod = dists_fin[dists_fin['C1'] < dists_fin['C2']]
 
-        return dists_fin_nod
+        return dists_fin_nod #.sort_values(by='similarity', ascending=False)

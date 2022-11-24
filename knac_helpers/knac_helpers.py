@@ -12,6 +12,8 @@ from sklearn.datasets import make_moons
 
 from sklearn.cluster import KMeans
 
+from sklearn.preprocessing import LabelEncoder
+
 import pandas as pd
 import numpy as np
 
@@ -36,7 +38,7 @@ def prepareDf2(E, C):
         
         dfData[str(C_cluster)] = rowData
     
-    df = pd.DataFrame(dfData)
+    df = pd.DataFrame(dfData, index=E_clusters)
     return df
 
 
@@ -62,10 +64,10 @@ def find_centers(X, Y):
     return np.array(result)
 
 
-def caption_clusters(ax, centers):
-    ax.scatter(centers[:, 0], centers[:, 1], marker='o', c="white", alpha=1, s=200, edgecolor='k')
+def caption_clusters(ax, centers, scale=1):
+    ax.scatter(centers[:, 0], centers[:, 1], marker='o', c="white", alpha=1, s=200*scale, edgecolor='k')
     for i, c in enumerate(centers):
-        ax.scatter(c[0], c[1], marker='$%d$' % i, alpha=1, s=50, edgecolor='k')
+        ax.scatter(c[0], c[1], marker='$%d$' % i, alpha=1, s=50*scale, edgecolor='k')
 
 label_exper_clustering = 'Expert clustering'
 label_automated_clustering = 'Automated clustering'
@@ -78,13 +80,17 @@ label_heatmap_y_axis = 'E'
 label_heatmap_x_axis = 'C'
 
         
-def myPlot1(X, Y, E, dataset_name=None, centersY=None, centersE=None, patches=None, heatmap_matrix=None, heatmap_matrix_type=None):
+def myPlot1(X, Y, E, dataset_name=None, centersY=None, centersE=None, patches=None, heatmap_matrix=None, heatmap_matrix_type=None, file=None):
     df = prepareDf2(E, Y) # deprecated
+    
+    le = LabelEncoder()
+    E_integer_labels = le.fit_transform(E)
+    Y_integer_labels = le.fit_transform(Y)
 
     fig, (ax0, ax1, ax2) = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
 
     ax0.set_title(label_exper_clustering)
-    ax0.scatter(X[:, 0], X[:, 1], c=E, marker='o', s=100, cmap='viridis')
+    ax0.scatter(X[:, 0], X[:, 1], c=E_integer_labels, marker='o', s=100, cmap='viridis')
     if (centersE is not None):
         caption_clusters(ax0, centersE)
        
@@ -93,7 +99,7 @@ def myPlot1(X, Y, E, dataset_name=None, centersY=None, centersE=None, patches=No
             ax0.add_patch(p)
    
     ax1.set_title(label_automated_clustering)
-    ax1.scatter(X[:, 0], X[:, 1], c=Y, marker='o', s=100, cmap='viridis')
+    ax1.scatter(X[:, 0], X[:, 1], c=Y_integer_labels, marker='o', s=100, cmap='viridis')
     if (centersY is not None):
         caption_clusters(ax1, centersY)
         
@@ -116,24 +122,32 @@ def myPlot1(X, Y, E, dataset_name=None, centersY=None, centersE=None, patches=No
         fig.suptitle('Dataset ' + dataset_name, y=1.03, x=0.08, fontsize=14)
         
     fig.tight_layout()
+
+    if (file is not None):
+        plt.savefig(file, dpi=150)
+
     plt.show()
     
     return df
 
 
-def myPlot2(X, Y, E, dataset_name=None, biggerHeatmap=False, random_state=170):
+def myPlot2(X, Y, E, dataset_name=None, biggerHeatmap=False, random_state=170, file=None):
     df = prepareDf2(E, Y)
 
-    fig, (ax0, ax1, ax2) = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
+    le = LabelEncoder()
+    E_integer_labels = le.fit_transform(E)
+    Y_integer_labels = le.fit_transform(Y)
+
+    fig, (ax0, ax1, ax2) = plt.subplots(nrows=1, ncols=3, figsize=(14, 5))
 
     X_ft = umap.UMAP(random_state=random_state).fit_transform(X)
     ax0.set_title(label_exper_clustering + ' (UMAP)')
-    ax0.scatter(X_ft[:, 0], X_ft[:, 1], c=E)
+    ax0.scatter(X_ft[:, 0], X_ft[:, 1], c=E_integer_labels)
     ax1.set_title(label_automated_clustering + ' (UMAP)')
-    ax1.scatter(X_ft[:, 0], X_ft[:, 1], c=Y)
+    ax1.scatter(X_ft[:, 0], X_ft[:, 1], c=Y_integer_labels)
     
     if biggerHeatmap==False:
-        sns.heatmap(df.to_numpy().astype(int), annot=True, cmap='viridis',fmt='g',ax=ax2)
+        sns.heatmap(np.around(df, 3), annot=True, cmap='viridis',fmt='g',ax=ax2)
         ax2.set_ylim([df.shape[0], 0]) # source: https://datascience.stackexchange.com/a/67741
         ax2.set_title(labels_heatmap['confusion'])
         plt.xlabel(label_heatmap_x_axis, fontsize = 11)
@@ -145,11 +159,15 @@ def myPlot2(X, Y, E, dataset_name=None, biggerHeatmap=False, random_state=170):
         fig.suptitle('Dataset ' + dataset_name, y=1.03, x=0.08, fontsize=14)
     
     fig.tight_layout()
+
+    if (file is not None):
+        plt.savefig(file, dpi=150)
+
     plt.show()
     
     if biggerHeatmap==True:
         fig, ax = plt.subplots(figsize=(12,10))
-        sns.heatmap(df.to_numpy().astype(int), annot=True, cmap='viridis',fmt='g', ax=ax)
+        sns.heatmap(np.around(df, 3), annot=True, cmap='viridis',fmt='g', ax=ax)
         ax.set_ylim([df.shape[0], 0]) # source: https://datascience.stackexchange.com/a/67741
         ax.set_title(labels_heatmap['confusion'])
         plt.xlabel(label_heatmap_x_axis, fontsize = 11)
@@ -288,5 +306,6 @@ def merge(E, row_idx1, row_idx2):
     
 def split(E, Y, row, col1, col2):
     mask = np.invert(np.logical_and(E == row, Y == col2))
-    new_cluster_no = np.amax(E) + 1
+    #new_cluster_no = np.amax(E) + 1
+    new_cluster_no = f'split->{row};{col1};{col2}'
     return np.where(mask, E, new_cluster_no)  
