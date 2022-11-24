@@ -83,7 +83,7 @@ pip install -r requirements.txt
 ```
 After that run `jupyter lab` and anvigate to `examples`   direcotry to run notebooks.
 
-# Cite this wotk
+# Cite this work
 
 ```
 @Article{bobek2022knac,
