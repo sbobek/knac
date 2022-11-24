@@ -5,6 +5,8 @@ KnAC is a toolk for expert knowledge extension with a usage of automatic cluster
 It allows to refine expert-based labeling with splits and merges recommendations of expert labeling augmented with explanations.
 The explanations were formulated as rules and therefore can be easily interpreted incorporated with expert knowledge.
 
+Possible integration witth [CLAMP](https://github.com/sbobek/clamp) and [LUX](https://github.com/sbobek/lux) is currently under development.
+
 The overall workflow for KnAC is presented in Figure below:
 ![Workflow for KnAC](./pix/workflow.png?raw=true "Title")
 
