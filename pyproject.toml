@@ -1,0 +1,33 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "knac-toolkit"
+version = "1.0.1"
+description = "Knowledge Augmented Clustering"
+readme = "README.md"
+authors = [{ name = "Szymon Bobek", email = "szymon.bobek@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["xai", "clustering","explainability", "model-agnostic", "rule-based"]
+dependencies = ["pandas>=1.5.2",
+    "umap-learn>=0.5.1",
+    "anchor-exp>=0.0.2.0",
+    "lux-explainer>=1.0.1",
+    "seaborn>=0.12.1",
+    "plotly>=5.11.0",
+    "tabulate>=0.9.0",
+    "graphviz>=0.20.1"
+]
+requires-python = ">=3.8"
+
+
+[project.urls]
+Homepage = "https://github.com/sbobek/knac"
+Documentation = "https://knac-toolkit.readthedocs.org"
+Issues = "https://github.com/sbobek/knac/issues"

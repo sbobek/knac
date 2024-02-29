@@ -8,12 +8,31 @@ The explanations were formulated as rules and therefore can be easily interprete
 Possible integration witth [CLAMP](https://github.com/sbobek/clamp) and [LUX](https://github.com/sbobek/lux) is currently under development.
 
 The overall workflow for KnAC is presented in Figure below:
-![Workflow for KnAC](./pix/workflow.png?raw=true "Title")
+![Workflow for KnAC](https://raw.githubusercontent.com/sbobek/knac/main/pix/workflow.png "Title")
+
+
+## Install
+KnAC can be installed from either [PyPI](https://pypi.org/project/knac) or directly from source code [GitHub](https://github.com/sbobek/knac)
+
+To install form PyPI:
+
+```
+pip install knac-toolkit
+```
+
+To install from  source:
+
+``` python
+git clone  https://github.com/sbobek/knac
+cd knac
+pip install .
+```
+After that you can install and run `jupyter lab` and anvigate to `examples`   direcotry to run notebooks.
 
 ## Splitting example
 Synthetic datasets with clusters to split is presented below. Columns in the figure represent clustering performed with expert knowledge, automated clustering, and $H^{split}$ matrix. In this example it is visible that expert knowledge clustering defined cluster 1 which should in fact be merged according to wht is seen in the data.
 
-![](./pix/split-toy-example.png)
+![](https://raw.githubusercontent.com/sbobek/knac/main/pix/split-toy-example.png)
 
 For such a cese we will get following KnAC recommendations:
 
@@ -47,7 +66,7 @@ justify_splits_tree(expert_to_split=expert_to_split,
 ## Merging example
 Synthetic datasets with clusters to merge is presented below. Columns in the figure represent clustering performed with expert knowledge, automated clustering, and $H^{merge}$ matrix. In this example it is visible that expert knowledge clustering defined cluster 0 and 3 which should in fact be merged according to wht is seen in the data.
 
-![](./pix/merge-toy-example.png)
+![](https://raw.githubusercontent.com/sbobek/knac/main/pix/merge-toy-example.png)
 
 For such a cese we will get following KnAC recommendations:
 
@@ -73,17 +92,6 @@ justify_merges_tree(merge_recoms=merge_recoms, data=data, features=features, tar
  'if (x2 > -5.065) then class: 3 (proba: 97.78%) | based on 45 samples']
 ```
 
-
-## Set up environment to run examples
-Some of the packages used in KnAC anre not available in conda, hence the following code should set up all of the requirements in virtual environment:
-
-``` python
-conda create --name knac python=3.8
-conda activate knac
-conda install pip
-pip install -r requirements.txt
-```
-After that run `jupyter lab` and anvigate to `examples`   direcotry to run notebooks.
 
 # Cite this work
 
