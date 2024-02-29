@@ -3,8 +3,8 @@ requires      = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "knac"
-version = "1.0.0"
+name = "knac-toolkit"
+version = "1.0.1"
 description = "Knowledge Augmented Clustering"
 readme = "README.md"
 authors = [{ name = "Szymon Bobek", email = "szymon.bobek@gmail.com" }]
@@ -14,7 +14,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-keywords = ["xai", "explainability", "model-agnostic", "rule-based"]
+keywords = ["xai", "clustering","explainability", "model-agnostic", "rule-based"]
 dependencies = ["pandas>=1.5.2",
     "umap-learn>=0.5.1",
     "anchor-exp>=0.0.2.0",
@@ -29,5 +29,5 @@ requires-python = ">=3.8"
 
 [project.urls]
 Homepage = "https://github.com/sbobek/knac"
-Documentation = "https://knac.readthedocs.org"
+Documentation = "https://knac-toolkit.readthedocs.org"
 Issues = "https://github.com/sbobek/knac/issues"
