@@ -5,15 +5,14 @@ This page contains the API reference for public objects and functions in LUX.
 
 .. _explanation_api:
 
-Explanation interface
+Knowledge Augmented Clustering interface
 -------------
 .. autosummary::
     :toctree: generated/
 
-    knac.knac.KnacSplits
-    knac.knac.KnacMerges
+    knac.KnacSplits
+    knac.KnacMerges
 
-.. _tree_api:
 
 
 
