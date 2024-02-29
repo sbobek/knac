@@ -8,12 +8,12 @@ The explanations were formulated as rules and therefore can be easily interprete
 Possible integration witth [CLAMP](https://github.com/sbobek/clamp) and [LUX](https://github.com/sbobek/lux) is currently under development.
 
 The overall workflow for KnAC is presented in Figure below:
-![Workflow for KnAC](./pix/workflow.png?raw=true "Title")
+![Workflow for KnAC](https://raw.githubusercontent.com/sbobek/knac/main/pix/workflow.png "Title")
 
 ## Splitting example
 Synthetic datasets with clusters to split is presented below. Columns in the figure represent clustering performed with expert knowledge, automated clustering, and $H^{split}$ matrix. In this example it is visible that expert knowledge clustering defined cluster 1 which should in fact be merged according to wht is seen in the data.
 
-![](./pix/split-toy-example.png)
+![](https://raw.githubusercontent.com/sbobek/knac/main/pix/split-toy-example.png)
 
 For such a cese we will get following KnAC recommendations:
 
@@ -47,7 +47,7 @@ justify_splits_tree(expert_to_split=expert_to_split,
 ## Merging example
 Synthetic datasets with clusters to merge is presented below. Columns in the figure represent clustering performed with expert knowledge, automated clustering, and $H^{merge}$ matrix. In this example it is visible that expert knowledge clustering defined cluster 0 and 3 which should in fact be merged according to wht is seen in the data.
 
-![](./pix/merge-toy-example.png)
+![](https://raw.githubusercontent.com/sbobek/knac/main/pix/merge-toy-example.png)
 
 For such a cese we will get following KnAC recommendations:
 
