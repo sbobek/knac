@@ -13,7 +13,7 @@ Welcome to the LUX documentation
 Install
 =======
 
-KnAC can be installed from either `PyPI <https://pypi.org/project/lux-explainer>`_ or directly from source code `PyPI <https://github.com/sbobek/lux>`_
+KnAC can be installed from either `PyPI <https://pypi.org/project/knac-toolkit>`_ or directly from source code `GitHub <https://github.com/sbobek/knac>`_
 
 To install form PyPI::
 

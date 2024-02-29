@@ -16,13 +16,5 @@ Explanation interface
 .. _tree_api:
 
 
-.. _utils_api:
-
-Urilities
--------------
-.. autosummary::
-    :toctree: generated/
-
-    knac_helpers.*
 
 

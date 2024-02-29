@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../src/'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'knac'
+project = 'knac-toolkit'
 copyright = '2024, Szymon Bobek'
 author = 'Szymon Bobek'
 
