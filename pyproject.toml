@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "knac-toolkit"
-version = "1.0.1"
+version = "1.0.2"
 description = "Knowledge Augmented Clustering"
 readme = "README.md"
 authors = [{ name = "Szymon Bobek", email = "szymon.bobek@gmail.com" }]
@@ -22,7 +22,8 @@ dependencies = ["pandas>=1.5.2",
     "seaborn>=0.12.1",
     "plotly>=5.11.0",
     "tabulate>=0.9.0",
-    "graphviz>=0.20.1"
+    "graphviz>=0.20.1",
+    "ipython>=8.22.1"
 ]
 requires-python = ">=3.8"
 
