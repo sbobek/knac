@@ -1,3 +1,6 @@
+[![PyPI](https://img.shields.io/pypi/v/knac-toolkit)](https://pypi.org/project/knac-toolkit/)  ![License](https://img.shields.io/github/license/sbobek/knac)
+ ![PyPI - Downloads](https://img.shields.io/pypi/dm/knac-toolkit) [![Documentation Status](https://readthedocs.org/projects/knac-toolkit/badge/?version=latest)](https://tsproto.readthedocs.io/en/latest/?badge=latest)
+   
 # Google Colab Tutorial
 Please follow the tutorial on using KnAC in text-clustering and fil in the survey at the end: [Colab Notebook](https://colab.research.google.com/drive/1SJaG_wW0h1_JaPk40vPNP3dpTJGa1xXG)
 # Knowledge Augmented Clustering (KnAC)
